@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String  @id @default(uuid())
+  googleId  String  @unique
+  email     String  @unique
+  username  String
+  avatarUrl String?
+
+  Library     Library[]
+  AnimeStream AnimeStream[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Library {
+  id           String @id @default(uuid())
+  userId       String
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jikanMediaId String
+
+  type     MediaType
+  episodes Int?      @default(0)
+  chapters Int?      @default(0)
+  volumes  Int?      @default(0)
+
+  score  Int?
+  status LibraryStatus @default(PLANNING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AnimeStream {
+  id           String       @id @default(uuid())
+  jikanMediaId String
+  url          String       @db.Text
+  status       StreamStatus @default(ALIVE)
+  episode      Int
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum MediaType {
+  ANIME
+  MANGA
+}
+
+enum LibraryStatus {
+  COMPLETED
+  WATCHING
+  PLANNING
+  PAUSED
+  DROPPED
+}
+
+enum StreamStatus {
+  ALIVE
+  DEAD
+}
