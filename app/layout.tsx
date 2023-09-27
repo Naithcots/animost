@@ -2,6 +2,8 @@ import SessionProvider from "@/components/providers/session-provider";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import AppHeader from "@/components/layout/header/app-header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,8 +19,18 @@ export default function RootLayout({
 }) {
   return (
     <SessionProvider>
-      <html lang="en">
-        <body className={inter.className}>{children}</body>
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${inter.className} bg-white dark:bg-zinc-900`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+            enableColorScheme
+          >
+            <AppHeader />
+            {children}
+          </ThemeProvider>
+        </body>
       </html>
     </SessionProvider>
   );
