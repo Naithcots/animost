@@ -1,9 +1,13 @@
+import AppHeader from "@/components/layout/header/app-header";
+import ModalProvider from "@/components/providers/modal-provider";
+import QueryProvider from "@/components/providers/query-provider";
 import SessionProvider from "@/components/providers/session-provider";
-import "./globals.css";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/components/providers/theme-provider";
-import AppHeader from "@/components/layout/header/app-header";
+import "./globals.css";
+import MobileNav from "@/components/mobile-nav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,20 +22,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SessionProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={`${inter.className} bg-white dark:bg-zinc-900`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} bg-white dark:bg-zinc-900`}>
+        <SessionProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
             enableSystem={false}
             enableColorScheme
           >
-            <AppHeader />
-            {children}
+            <QueryProvider>
+              <AppHeader />
+              <ModalProvider />
+              {children}
+              <MobileNav />
+              <Toaster />
+            </QueryProvider>
           </ThemeProvider>
-        </body>
-      </html>
-    </SessionProvider>
+        </SessionProvider>
+      </body>
+    </html>
   );
 }

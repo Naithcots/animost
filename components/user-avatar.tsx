@@ -10,7 +10,7 @@ const UserAvatar = ({ src, username }: UserAvatarProps) => {
   const fallbackName = username.substring(0, 2).toUpperCase();
 
   return (
-    <Avatar>
+    <Avatar className="w-8 h-8">
       {src && <AvatarImage src={src} />}
       <AvatarFallback>{fallbackName}</AvatarFallback>
     </Avatar>

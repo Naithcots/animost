@@ -1,14 +1,26 @@
-import NextAuth from "next-auth/next";
-import GoogleProvider from "next-auth/providers/google";
 import db from "@/lib/db";
+import { AuthOptions, DefaultSession } from "next-auth";
+import NextAuth, { getServerSession } from "next-auth/next";
+import GoogleProvider from "next-auth/providers/google";
 
-const handler = NextAuth({
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+    } & DefaultSession["user"];
+  }
+}
+
+const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.AUTH_GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET as string,
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     async signIn({ user }) {
       try {
@@ -31,11 +43,21 @@ const handler = NextAuth({
 
         return true;
       } catch (error) {
-        console.log(error);
+        console.log("next-auth Error - signIn: ", error);
         return false;
       }
     },
+    async jwt({ token, user }) {
+      if (user) token.id = user.id;
+      return token;
+    },
+    async session({ session, token }) {
+      if (token?.id) session.user.id = token.id as string;
+      return session;
+    },
   },
-});
+};
 
-export { handler as GET, handler as POST };
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST, authOptions };
+export const useServerSession = () => getServerSession(authOptions);

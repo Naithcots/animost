@@ -21,11 +21,24 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+model LibraryAnime {
+  jikanMediaId String @id
+
+  title  String
+  image  String
+  status AnimeStatus
+  type   AnimeType
+
+  Library Library[]
+  Genres  Genre[]
+}
+
 model Library {
-  id           String @id @default(uuid())
+  id           String       @id @default(uuid())
   userId       String
-  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jikanMediaId String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mediaId      String
+  LibraryAnime LibraryAnime @relation(fields: [mediaId], references: [jikanMediaId], onDelete: Cascade)
 
   type     MediaType
   episodes Int?      @default(0)
@@ -53,6 +66,15 @@ model AnimeStream {
   updatedAt DateTime @updatedAt
 }
 
+model Genre {
+  mal_id String @id
+  name   String
+  type   String
+  url    String
+
+  Media LibraryAnime[]
+}
+
 enum MediaType {
   ANIME
   MANGA
@@ -69,4 +91,19 @@ enum LibraryStatus {
 enum StreamStatus {
   ALIVE
   DEAD
+}
+
+enum AnimeStatus {
+  FINISHED
+  AIRING
+  PLANNED
+}
+
+enum AnimeType {
+  TV
+  OVA
+  MOVIE
+  SPECIAL
+  ONA
+  MUSIC
 }
