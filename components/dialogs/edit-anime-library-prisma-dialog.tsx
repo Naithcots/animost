@@ -84,7 +84,7 @@ const EditAnimeLibraryPrismaDialog = () => {
 
   const handleClose = () => {
     close();
-    setTimeout(() => form.reset(), 150);
+    setTimeout(() => form.reset(), 200);
   };
 
   const onRemove = async () => {

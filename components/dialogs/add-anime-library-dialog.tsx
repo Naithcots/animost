@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Anime } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LibraryStatus } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -38,7 +39,7 @@ const AddAnimeLibraryDialog = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const open = isOpen && type === "createAnimeLibrary";
-  const { anime } = data;
+  const anime = data?.anime as Anime;
 
   const formSchema = z.object({
     status: z.nativeEnum(LibraryStatus).default("PLANNING"),
@@ -67,7 +68,7 @@ const AddAnimeLibraryDialog = () => {
 
   const handleClose = () => {
     close();
-    setTimeout(() => form.reset(), 150);
+    setTimeout(() => form.reset(), 200);
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
