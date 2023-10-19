@@ -34,7 +34,9 @@ export default function RootLayout({
             <QueryProvider>
               <AppHeader />
               <ModalProvider />
-              {children}
+              <main className="container mx-auto max-w-8xl mt-3">
+                {children}
+              </main>
               <MobileNav />
               <Toaster />
             </QueryProvider>

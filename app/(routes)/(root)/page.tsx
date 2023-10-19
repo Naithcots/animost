@@ -1,23 +1,26 @@
 import getPopularAnime from "@/lib/queries/jikan/getPopularAnime";
 import AnimeCard from "@/components/anime-card";
+import LoadingHome from "./loading";
 
 const Home = async () => {
-  const topAiringAnime = await getPopularAnime({
+  const topAiringAnimeReq = getPopularAnime({
     filter: "airing",
     sfw: true,
     page: 1,
     limit: 16,
   });
 
-  const topUpcomingAnime = await getPopularAnime({
+  const topUpcomingAnimeReq = getPopularAnime({
     filter: "upcoming",
     sfw: true,
     page: 1,
     limit: 16,
   });
 
+  const [topAiringAnime, topUpcomingAnime] = await Promise.all([topAiringAnimeReq, topUpcomingAnimeReq])
+
   return (
-    <main className="container mx-auto max-w-8xl mt-3">
+    <>
       <div>
         <p className="mb-3 text-2xl font-bold">Top Airing Anime🔥</p>
         <div className="grid grid-cols-2 sm:grid-cols-4  lg:grid-cols-8 gap-4">
@@ -34,7 +37,7 @@ const Home = async () => {
           ))}
         </div>
       </div>
-    </main>
+    </>
   );
 };
 export default Home;
