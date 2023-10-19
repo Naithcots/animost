@@ -1,6 +1,5 @@
-import getPopularAnime from "@/lib/queries/jikan/getPopularAnime";
 import AnimeCard from "@/components/anime-card";
-import LoadingHome from "./loading";
+import getPopularAnime from "@/lib/queries/jikan/getPopularAnime";
 
 const Home = async () => {
   const topAiringAnimeReq = getPopularAnime({
@@ -17,7 +16,10 @@ const Home = async () => {
     limit: 16,
   });
 
-  const [topAiringAnime, topUpcomingAnime] = await Promise.all([topAiringAnimeReq, topUpcomingAnimeReq])
+  const [topAiringAnime, topUpcomingAnime] = await Promise.all([
+    topAiringAnimeReq,
+    topUpcomingAnimeReq,
+  ]);
 
   return (
     <>

@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LibraryAnime, LibraryStatus } from "@prisma/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -32,9 +33,9 @@ import {
   SelectValue,
 } from "../ui/select";
 import { useToast } from "../ui/use-toast";
-import { useRouter } from "next/navigation";
 
 const EditAnimeLibraryPrismaDialog = () => {
+  const [isReady, setIsReady] = useState(false);
   const [isEpisodesDisabled, setIsEpisodesDisabled] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
   const { data, isOpen, type, close } = useModal();
@@ -47,25 +48,25 @@ const EditAnimeLibraryPrismaDialog = () => {
   const open = isOpen && type === "editAnimeLibraryPrisma";
 
   const {
-    data: jikanData,
+    data: jikanReq,
     isLoading: jikanIsLoading,
     isError: jikanIsError,
-  } = useQuery(
-    ["anime", { animeId: anime?.jikanMediaId }],
-    () => getAnimeFull({ id: Number(anime?.jikanMediaId) }),
-    {
-      enabled: !!anime && open,
-    }
-  );
+  } = useQuery({
+    queryKey: ["anime", { animeId: anime?.jikanMediaId }],
+    queryFn: () => getAnimeFull({ id: Number(anime?.jikanMediaId) }),
+    enabled: !!anime && open,
+  });
+
+  const jikanData = jikanReq?.data;
 
   const formSchema = z.object({
     status: z.nativeEnum(LibraryStatus),
     episodes: z.coerce
       .number()
       .min(0)
-      .max(jikanData?.data?.episodes || 9999, {
-        message: jikanData?.data?.episodes
-          ? `This anime aired with ${jikanData?.data?.episodes} episodes.`
+      .max(jikanData?.episodes || 9999, {
+        message: jikanData?.episodes
+          ? `This anime aired with ${jikanData?.episodes} episodes.`
           : "Is that even possible?",
       }),
     score: z.coerce.number().min(0).max(100).nullable().optional(),
@@ -92,14 +93,14 @@ const EditAnimeLibraryPrismaDialog = () => {
       setIsRemoving(true);
       await axios.delete(`/api/library/${library!.id}`);
       await queryClient.invalidateQueries({
-        queryKey: ["library", { animeId: jikanData!.data.mal_id }],
+        queryKey: ["library", { animeId: jikanData!.mal_id }],
       });
       router.refresh();
       handleClose();
       toast({
         title: "Success!",
         description: `${
-          jikanData!.data.titles[0].title
+          jikanData!.titles[0].title
         } succesfully removed from library.`,
         duration: 3000,
       });
@@ -121,16 +122,16 @@ const EditAnimeLibraryPrismaDialog = () => {
     try {
       await axios.patch(`/api/library/${library?.id}`, {
         ...values,
-        mediaId: jikanData!.data.mal_id,
+        mediaId: jikanData!.mal_id,
       });
       await queryClient.invalidateQueries({
-        queryKey: ["library", { animeId: jikanData!.data.mal_id }],
+        queryKey: ["library", { animeId: jikanData!.mal_id }],
       });
       router.refresh();
       handleClose();
       toast({
         title: "Success!",
-        description: `${jikanData!.data.titles[0].title} succesfully updated.`,
+        description: `${jikanData!.titles[0].title} succesfully updated.`,
         duration: 3000,
       });
     } catch (error) {
@@ -149,8 +150,8 @@ const EditAnimeLibraryPrismaDialog = () => {
     const { unsubscribe } = form.watch((value) => {
       if (value.status === "COMPLETED") {
         setIsEpisodesDisabled(true);
-        if (value.episodes !== jikanData?.data?.episodes!) {
-          form.setValue("episodes", jikanData?.data?.episodes!);
+        if (value.episodes !== jikanData?.episodes!) {
+          form.setValue("episodes", jikanData?.episodes!);
         }
       } else {
         setIsEpisodesDisabled(false);
@@ -159,15 +160,17 @@ const EditAnimeLibraryPrismaDialog = () => {
     return () => {
       unsubscribe();
     };
-  }, [form.watch, jikanData?.data]);
+  }, [form.watch, jikanData]);
 
   useEffect(() => {
+    setIsReady(false);
     if (library?.status) form.setValue("status", library.status);
     if (library?.score) form.setValue("score", library.score);
     if (library?.episodes) form.setValue("episodes", library.episodes);
-  }, [anime, library, jikanData?.data]);
+    setIsReady(true);
+  }, [anime, library, jikanData]);
 
-  if (!anime && !library && !jikanData?.data) return null;
+  if (!anime || !library || !jikanData || !isReady) return null;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -200,12 +203,12 @@ const EditAnimeLibraryPrismaDialog = () => {
                       <SelectItem value={LibraryStatus.PLANNING}>
                         Planning
                       </SelectItem>
-                      {jikanData?.data.status !== "Not yet aired" && (
+                      {jikanData?.status !== "Not yet aired" && (
                         <>
                           <SelectItem value={LibraryStatus.WATCHING}>
                             Watching
                           </SelectItem>
-                          {jikanData?.data.status === "Finished Airing" && (
+                          {jikanData?.status === "Finished Airing" && (
                             <SelectItem value={LibraryStatus.COMPLETED}>
                               Completed
                             </SelectItem>
@@ -223,7 +226,7 @@ const EditAnimeLibraryPrismaDialog = () => {
                 </FormItem>
               )}
             />
-            {jikanData?.data.status !== "Not yet aired" && (
+            {jikanData?.status !== "Not yet aired" && (
               <FormField
                 control={form.control}
                 name="episodes"
@@ -238,9 +241,9 @@ const EditAnimeLibraryPrismaDialog = () => {
                           isSubmitting || isEpisodesDisabled || isRemoving
                         }
                       />
-                      {jikanData?.data.episodes && (
+                      {jikanData?.episodes && (
                         <span className="absolute flex items-center h-full top-0 bottom-0 right-3 text-zinc-600 select-none">
-                          /{jikanData?.data.episodes}
+                          /{jikanData?.episodes}
                         </span>
                       )}
                     </div>
@@ -249,7 +252,7 @@ const EditAnimeLibraryPrismaDialog = () => {
                 )}
               />
             )}
-            {jikanData?.data.status !== "Not yet aired" && (
+            {jikanData?.status !== "Not yet aired" && (
               <FormField
                 control={form.control}
                 name="score"

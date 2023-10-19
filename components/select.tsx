@@ -11,11 +11,12 @@ interface SelectProps {
   value: string;
   setValue: (a: any) => void;
   items: { name: string; value: string }[];
+  disabled: boolean;
 }
 
-const Select = ({ name, value, items, setValue }: SelectProps) => {
+const Select = ({ name, value, items, setValue, disabled }: SelectProps) => {
   return (
-    <RadixSelect defaultValue={value} onValueChange={(val) => setValue(val)}>
+    <RadixSelect disabled={disabled} defaultValue={value} onValueChange={(val) => setValue(val)}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder={name} />
       </SelectTrigger>

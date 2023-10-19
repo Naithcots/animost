@@ -125,4 +125,11 @@ type LibraryWithLibraryAnime = Library & {
   LibraryAnime: LibraryAnime;
 };
 
-export type { AnimeOrderBy, AnimeStatus, Anime, LibraryWithLibraryAnime };
+type JikanAPIErrorType = {
+  error: string;
+  status: number;
+  type: string;
+  messages: { [type: string]: string };
+};
+
+export type { AnimeOrderBy, AnimeStatus, Anime, LibraryWithLibraryAnime, JikanAPIErrorType };

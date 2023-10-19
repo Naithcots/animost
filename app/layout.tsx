@@ -1,4 +1,5 @@
 import AppHeader from "@/components/layout/header/app-header";
+import MobileNav from "@/components/mobile-nav";
 import ModalProvider from "@/components/providers/modal-provider";
 import QueryProvider from "@/components/providers/query-provider";
 import SessionProvider from "@/components/providers/session-provider";
@@ -7,7 +8,6 @@ import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import MobileNav from "@/components/mobile-nav";
 
 const inter = Inter({ subsets: ["latin"] });
 

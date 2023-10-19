@@ -17,7 +17,6 @@ const LibraryAnimeCard = ({ data }: LibraryAnimeCardProps) => {
   return (
     <div className="relative w-full aspect-[3/4] group">
       <Image
-        priority
         fill
         sizes="25vw"
         src={anime.image}

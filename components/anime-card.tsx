@@ -8,11 +8,11 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import getLibraryEntry from "@/lib/queries/getLibraryEntry";
 import { Anime } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Edit, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
-import getLibraryEntry from "@/lib/queries/getLibraryEntry";
 
 type AnimeCardProps = {
   data: Anime;
@@ -22,13 +22,11 @@ const AnimeCard = ({ data }: AnimeCardProps) => {
   const { status, data: userData } = useSession();
   const { open } = useModal();
 
-  const { data: libraryData, isLoading: libraryIsLoading } = useQuery(
-    ["library", { userId: userData?.user.id, animeId: data.mal_id }],
-    () => getLibraryEntry({ jikanMediaId: data.mal_id.toString() }),
-    {
-      enabled: status === "authenticated",
-    }
-  );
+  const { data: libraryData, isLoading: libraryIsLoading } = useQuery({
+    queryKey: ["library", { userId: userData?.user.id, animeId: data.mal_id }],
+    queryFn: () => getLibraryEntry({ jikanMediaId: data.mal_id.toString() }),
+    enabled: status === "authenticated",
+  });
 
   return (
     <HoverCard openDelay={200} closeDelay={100}>
@@ -36,7 +34,6 @@ const AnimeCard = ({ data }: AnimeCardProps) => {
         {/* <Link href={`/animes/${data.mal_id}`}> */}
         <div className="relative w-full aspect-[3/4] group">
           <Image
-            priority
             fill
             sizes="25vw"
             src={data.images.webp.large_image_url}

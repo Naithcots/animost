@@ -30,7 +30,7 @@ const Filters = ({ items, checkedArray, toggle }: FiltersProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <ScrollArea className="h-[300px]">
-          {items.data.map((item: any) => (
+          {items.map((item: any) => (
             <DropdownMenuCheckboxItem
               key={item.mal_id}
               checked={checkedArray.includes(item.mal_id)}
