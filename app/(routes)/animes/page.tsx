@@ -33,23 +33,6 @@ const AnimesPage = () => {
   const setSelectStatus = (val: AnimeStatus) => setStatus(val);
   const setOrderByStatus = (val: AnimeOrderBy) => setOrderBy(val);
 
-  // const {
-  //   data: animesRes,
-  //   isLoading: animesIsLoading,
-  //   isInitialLoading: animesIsInitialLoading,
-  //   refetch: animesManualRefetch,
-  // } = useQuery(["animes", debouncedSearchInput, genres, status, orderBy], () =>
-  //   getSearchAnime({
-  //     q: debouncedSearchInput,
-  //     sfw: true,
-  //     page: 1,
-  //     limit: 20,
-  //     genres: genres.join(","),
-  //     status,
-  //     order_by: orderBy,
-  //   })
-  // );
-
   const {
     data: animesRes,
     fetchNextPage: animesFetchNextPage,
@@ -61,7 +44,7 @@ const AnimesPage = () => {
       getSearchAnime({
         q: debouncedSearchInput,
         page: pageParam,
-        limit: 20,
+        limit: 24,
         sfw: true,
         genres: genres.join(","),
         status,

@@ -34,6 +34,7 @@ const AnimeCard = ({ data }: AnimeCardProps) => {
         {/* <Link href={`/animes/${data.mal_id}`}> */}
         <div className="relative w-full aspect-[3/4] group">
           <Image
+            priority
             fill
             sizes="25vw"
             src={data.images.webp.large_image_url}
