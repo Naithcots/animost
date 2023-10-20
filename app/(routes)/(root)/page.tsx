@@ -26,7 +26,7 @@ const Home = async () => {
       <div>
         <p className="mb-3 text-2xl font-bold">Top Airing Anime🔥</p>
         <div className="grid grid-cols-2 sm:grid-cols-4  lg:grid-cols-8 gap-4">
-          {topAiringAnime.data.map((item: any) => (
+          {topAiringAnime && topAiringAnime.data.map((item: any) => (
             <AnimeCard data={item} key={item.mal_id} />
           ))}
         </div>
@@ -34,7 +34,7 @@ const Home = async () => {
       <div className="mt-6">
         <p className="mb-3 text-2xl font-bold">Top Upcoming Anime🔜</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
-          {topUpcomingAnime.data.map((item: any) => (
+          {topUpcomingAnime && topUpcomingAnime.data.map((item: any) => (
             <AnimeCard data={item} key={item.mal_id} />
           ))}
         </div>
