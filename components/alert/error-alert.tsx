@@ -14,15 +14,13 @@ const ErrorAlert = ({
   return (
     <Alert variant="destructive">
       <XCircle />
-      <AlertTitle>{title}Couldn{"'"}t load collection..</AlertTitle>
+      <AlertTitle>{title}</AlertTitle>
       <AlertDescription>
         {description}
-        Unfortunately this is an internal error of external API we use to run
-        this site.
       </AlertDescription>
       <div>
         <Button
-          onClick={() => onClick()}
+          onClick={onClick}
           variant="destructive"
           className="mt-3"
         >
