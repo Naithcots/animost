@@ -8,7 +8,7 @@ const ErrorHome = ({ error, reset }: { error: Error; reset: () => void }) => {
     <div>
       <Alert variant="destructive">
         <XCircle />
-        <AlertTitle>Couldn't load collection..</AlertTitle>
+        <AlertTitle>Couldn{"'"}t load collection..</AlertTitle>
         <AlertDescription>
           Unfortunately this is an internal error of external API we use to run
           this site.
