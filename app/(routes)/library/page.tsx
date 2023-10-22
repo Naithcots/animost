@@ -1,84 +1,120 @@
-import { useServerSession } from "@/app/api/auth/[...nextauth]/route";
+"use client";
+import ErrorAlert from "@/components/alert/error-alert";
 import LibraryAnimeCard from "@/components/library-anime-card";
-import db from "@/lib/db";
-import { redirect } from "next/navigation";
+import Select from "@/components/select";
+import AnimeCardSkeleton from "@/components/skeleton/anime-card-skeleton";
+import getUserLibrary from "@/lib/queries/getUserLibrary";
+import { LibraryStatus } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export const revalidate = 0;
+const TEMP_FETCH_LIMIT = 8;
 
-const LibraryPage = async () => {
-  const session = await useServerSession();
-  if (!session?.user) redirect("/");
+const LibraryPage = () => {
+  const session = useSession();
+  const router = useRouter();
 
-  const animeLibrary = await db.library.findMany({
-    where: {
-      user: {
-        googleId: session.user.id,
-      },
-      type: "ANIME",
-    },
-    include: {
-      LibraryAnime: true,
-    },
+  const [status, setStatus] = useState<LibraryStatus>(LibraryStatus.WATCHING);
+  const selectItems = [
+    { name: "Watching", value: LibraryStatus.WATCHING },
+    { name: "Completed", value: LibraryStatus.COMPLETED },
+    { name: "Planned", value: LibraryStatus.PLANNING },
+    { name: "Paused", value: LibraryStatus.PAUSED },
+    { name: "Dropped", value: LibraryStatus.DROPPED },
+  ];
+
+  useEffect(() => {
+    if (session.status === "unauthenticated") router.push("/");
+  }, [session]);
+
+  const {
+    data: animeLibrary,
+    isLoading: animesIsLoading,
+    refetch: animesManualRefetch,
+  } = useQuery({
+    queryKey: ["library", { sessionUser: session.data?.user.id, status }],
+    queryFn: () => getUserLibrary(),
+    enabled: !!session.data?.user,
+    refetchOnMount: true,
   });
 
-  const completedAnimeLibrary = animeLibrary.filter(
+  const completedAnimeLibrary = animeLibrary?.filter(
     (entry) => entry.status === "COMPLETED"
   );
-  const watchingAnimeLibrary = animeLibrary.filter(
+  const watchingAnimeLibrary = animeLibrary?.filter(
     (entry) => entry.status === "WATCHING"
   );
-  const plannedAnimeLibrary = animeLibrary.filter(
+  const plannedAnimeLibrary = animeLibrary?.filter(
     (entry) => entry.status === "PLANNING"
   );
-  const pausedAnimeLibrary = animeLibrary.filter(
+  const pausedAnimeLibrary = animeLibrary?.filter(
     (entry) => entry.status === "PAUSED"
   );
-  const droppedAnimeLibrary = animeLibrary.filter(
+  const droppedAnimeLibrary = animeLibrary?.filter(
     (entry) => entry.status === "DROPPED"
   );
 
+  const animesByStatusMap = {
+    [LibraryStatus.WATCHING]: watchingAnimeLibrary,
+    [LibraryStatus.COMPLETED]: completedAnimeLibrary,
+    [LibraryStatus.PLANNING]: plannedAnimeLibrary,
+    [LibraryStatus.PAUSED]: pausedAnimeLibrary,
+    [LibraryStatus.DROPPED]: droppedAnimeLibrary,
+  };
+
+  const categoryNameByStatusMap = {
+    [LibraryStatus.WATCHING]: "Currently Watching",
+    [LibraryStatus.COMPLETED]: "Completed Shows",
+    [LibraryStatus.PLANNING]: "Planned Shows",
+    [LibraryStatus.PAUSED]: "Paused Shows",
+    [LibraryStatus.DROPPED]: "Dropped Shows",
+  };
+
+  if (session.status === "loading" || session.status === "unauthenticated")
+    return <></>;
+
   return (
-    <main className="container mx-auto max-w-8xl my-4">
+    <>
       <h1 className="text-3xl font-semibold">Your Library</h1>
+
+      <div className="mt-3">
+        <Select
+          name="Status"
+          value={status}
+          setValue={setStatus}
+          disabled={false}
+          items={selectItems}
+        />
+      </div>
+
       <div className="flex flex-col gap-y-3 mt-3">
         <div className="my-2">
-          <h2 className="text-2xl mb-3">Currently Watching</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
-            {!!watchingAnimeLibrary.length ? (
-              watchingAnimeLibrary.map((libraryEntry) => (
+          <h2 className="text-2xl mb-3">{categoryNameByStatusMap[status]}</h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+            {!!animesByStatusMap[status]?.length ? (
+              animesByStatusMap[status]?.map((libraryEntry) => (
                 <LibraryAnimeCard data={libraryEntry} key={libraryEntry.id} />
               ))
-            ) : (
+            ) : animesByStatusMap[status] ? (
               <p>No entries.</p>
-            )}
-          </div>
-        </div>
-        <div className="my-2">
-          <h2 className="text-2xl mb-3">Planned To Watch</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
-            {!!plannedAnimeLibrary.length ? (
-              plannedAnimeLibrary.map((libraryEntry) => (
-                <LibraryAnimeCard data={libraryEntry} key={libraryEntry.id} />
+            ) : animesIsLoading ? (
+              [...Array(TEMP_FETCH_LIMIT)].map((_, idx) => (
+                <AnimeCardSkeleton key={idx} />
               ))
             ) : (
-              <p>No entries.</p>
-            )}
-          </div>
-        </div>
-        <div className="my-2">
-          <h2 className="text-2xl mb-3">Completed Shows</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
-            {!!completedAnimeLibrary.length ? (
-              completedAnimeLibrary.map((libraryEntry) => (
-                <LibraryAnimeCard data={libraryEntry} key={libraryEntry.id} />
-              ))
-            ) : (
-              <p>No entries.</p>
+              <ErrorAlert
+                title="Error while loading data.."
+                description="Please try again by clicking at the button below."
+                onClick={animesManualRefetch}
+              />
             )}
           </div>
         </div>
       </div>
-    </main>
+    </>
   );
 };
+
 export default LibraryPage;

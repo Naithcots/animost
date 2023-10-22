@@ -9,7 +9,7 @@ export default async function getLibraryEntry({
 }: GetLibraryEntryParams) {
   const url = qs.stringifyUrl({
     url: "/api/library",
-    query: { jikanMediaId },
+    query: { mediaId: jikanMediaId },
   });
 
   const response = await fetch(url);

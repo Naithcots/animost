@@ -79,7 +79,7 @@ const EditAnimeLibraryJikanDialog = () => {
       setIsRemoving(true);
       await axios.delete(`/api/library/${library!.id}`);
       await queryClient.invalidateQueries({
-        queryKey: ["library", { animeId: anime!.mal_id }],
+        queryKey: ["library"],
       });
       handleClose();
       toast({
@@ -110,7 +110,7 @@ const EditAnimeLibraryJikanDialog = () => {
         mediaId: anime!.mal_id,
       });
       await queryClient.invalidateQueries({
-        queryKey: ["library", { animeId: anime!.mal_id }],
+        queryKey: ["library"],
       });
       handleClose();
       toast({

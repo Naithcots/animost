@@ -8,14 +8,20 @@ const MobileNav = () => {
   const [open, setOpen] = useState(false);
   const onClose = () => setOpen(false);
 
+  // Element that keeps button on bottom of the page
+  const hiddenOverlay = (
+    <div className="sm:hidden fixed top-0 left-0 inset-0 h-screen w-full invisible"></div>
+  );
+
   return (
     <>
-      <div
-        className="sm:hidden sticky bottom-3 ml-auto right-3 p-3 w-fit h-fit bg-blue-600 rounded-full cursor-pointer hover:bg-blue-600/80 transition z-50"
+      {hiddenOverlay}
+      <button
+        className="sm:hidden fixed bottom-3 ml-auto right-3 p-3 w-fit h-fit bg-blue-600 rounded-full cursor-pointer hover:bg-blue-600/80 transition z-50"
         onClick={() => setOpen((open) => !open)}
       >
         <Menu />
-      </div>
+      </button>
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent>

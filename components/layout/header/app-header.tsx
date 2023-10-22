@@ -22,13 +22,20 @@ const AppHeader = () => {
   const user = data?.user;
 
   return (
-    <header className="container mx-auto max-w-8xl flex items-center justify-between sm:justify-normal py-2 gap-x-4 z-100">
+    <header className="container mx-auto max-w-8xl px-4 flex items-center justify-between sm:justify-normal py-3 gap-x-4 z-100">
       <Link href={"/"}>
         <span className="text-xl font-semibold">AniMost</span>
       </Link>
       <div className="hidden sm:flex flex-1 ml-8">
         <NavigationMenu />
       </div>
+      {user && (
+        <div className="hidden ml-auto md:block">
+          <Link href={"/library"}>
+            <Button>Library</Button>
+          </Link>
+        </div>
+      )}
       <div className="flex items-center gap-x-3">
         {status !== "loading" &&
           (user ? (

@@ -7,15 +7,12 @@ interface AnimesGridProps {
 
 const AnimesGrid = ({ data }: AnimesGridProps) => {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
       {data.pages.map((page) =>
         page.data.map((item: any) => (
           <AnimeCard data={item} key={item.mal_id} />
         ))
       )}
-      {/* {data.map((item: any) => (
-        <AnimeCard data={item} key={item.mal_id} />
-      ))} */}
     </div>
   );
 };

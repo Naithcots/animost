@@ -93,7 +93,7 @@ const EditAnimeLibraryPrismaDialog = () => {
       setIsRemoving(true);
       await axios.delete(`/api/library/${library!.id}`);
       await queryClient.invalidateQueries({
-        queryKey: ["library", { animeId: jikanData!.mal_id }],
+        queryKey: ["library"],
       });
       router.refresh();
       handleClose();
@@ -125,7 +125,7 @@ const EditAnimeLibraryPrismaDialog = () => {
         mediaId: jikanData!.mal_id,
       });
       await queryClient.invalidateQueries({
-        queryKey: ["library", { animeId: jikanData!.mal_id }],
+        queryKey: ["library"],
       });
       router.refresh();
       handleClose();

@@ -78,7 +78,7 @@ const AddAnimeLibraryDialog = () => {
         anime,
       });
       await queryClient.invalidateQueries({
-        queryKey: ["library", { animeId: anime?.mal_id }],
+        queryKey: ["library"],
       });
       handleClose();
       toast({

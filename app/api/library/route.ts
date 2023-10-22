@@ -9,27 +9,41 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 import { useServerSession } from "../auth/[...nextauth]/route";
 
+// GET all authorized user library entries
+// Optional searchParams:
+// GET (url)?mediaId=? - GET authorized user single library entry
 export async function GET(req: NextRequest) {
   try {
     const session = await useServerSession();
-    const jikanMediaId = req.nextUrl.searchParams.get("jikanMediaId");
+    const searchParams = req.nextUrl.searchParams;
+    const mediaId = searchParams.get("mediaId");
 
     if (!session?.user)
       return new NextResponse("Unauthorized", { status: 401 });
 
-    if (!jikanMediaId)
-      return new NextResponse("Missing `jikanMediaId`", { status: 400 });
+    let libraryEntry;
 
-    const libraryEntry = await db.library.findFirst({
-      where: {
-        user: {
-          googleId: session.user.id,
+    if (mediaId) {
+      libraryEntry = await db.library.findFirst({
+        where: {
+          user: {
+            googleId: session.user.id,
+          },
+          mediaId,
         },
-        LibraryAnime: {
-          jikanMediaId: jikanMediaId.toString(),
+      });
+    } else {
+      libraryEntry = await db.library.findMany({
+        where: {
+          user: {
+            googleId: session.user.id,
+          },
         },
-      },
-    });
+        include: {
+          LibraryAnime: true,
+        },
+      });
+    }
 
     return NextResponse.json(libraryEntry);
   } catch (error) {
@@ -72,23 +86,6 @@ export async function POST(req: NextRequest) {
 
     const image =
       anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url;
-
-    // await db.$transaction(
-    //   anime.genres.map((genre) =>
-    //     db.genre.upsert({
-    //       where: {
-    //         mal_id: genre.mal_id.toString(),
-    //       },
-    //       create: {
-    //         mal_id: genre.mal_id.toString(),
-    //         name: genre.name,
-    //         type: genre.type,
-    //         url: genre.url,
-    //       },
-    //       update: {},
-    //     })
-    //   )
-    // );
 
     const libraryEntry = await db.library.create({
       data: {

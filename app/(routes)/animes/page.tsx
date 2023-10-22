@@ -1,18 +1,19 @@
 "use client";
 import useDebounce from "@/app/hooks/use-debounce";
+import ErrorAlert from "@/components/alert/error-alert";
 import AnimesGrid from "@/components/animes-grid";
 import Filters from "@/components/filters";
 import Select from "@/components/select";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import AnimeCardSkeleton from "@/components/skeleton/anime-card-skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import getGenresAnime from "@/lib/queries/jikan/getGenresAnime";
 import getSearchAnime from "@/lib/queries/jikan/getSearchAnime";
-import { AnimeOrderBy, AnimeStatus, JikanAPIErrorType } from "@/types";
+import { AnimeOrderBy, AnimeStatus } from "@/types";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Loader2, XCircle } from "lucide-react";
 import { useState } from "react";
 
+const FETCH_LIMIT = 24;
 const DEFAULT_ORDERBY: AnimeOrderBy = "popularity";
 const DEFAULT_STATUS: AnimeStatus = "all";
 
@@ -38,13 +39,14 @@ const AnimesPage = () => {
     fetchNextPage: animesFetchNextPage,
     hasNextPage: animesHasNextPage,
     isFetching: animesIsFetching,
+    isFetchingNextPage: animesIsFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ["animes", debouncedSearchInput, genres, status, orderBy],
     queryFn: ({ pageParam }) =>
       getSearchAnime({
         q: debouncedSearchInput,
         page: pageParam,
-        limit: 24,
+        limit: FETCH_LIMIT,
         sfw: true,
         genres: genres.join(","),
         status,
@@ -59,11 +61,7 @@ const AnimesPage = () => {
     refetchOnReconnect: false,
   });
 
-  const {
-    data: genresRes,
-    isLoading: genresIsLoading,
-    refetch: genresManualRefetch,
-  } = useQuery({
+  const { data: genresRes, refetch: genresManualRefetch } = useQuery({
     queryKey: ["anime_genres"],
     queryFn: () => getGenresAnime({ filter: "genres" }),
   });
@@ -71,37 +69,28 @@ const AnimesPage = () => {
   const animesData = animesRes;
   const genresData = genresRes?.data;
 
-  if (genresIsLoading && !genresData)
-    return (
-      <div className="text-center">
-        <Loader2 className="mx-auto mt-4 mb-1 h-8 w-8 animate-spin" />
-        <p>Loading animes...</p>
-      </div>
-    );
+  // if (genresIsLoading && !genresData)
+  //   return (
+  //     <div className="text-center pb-6">
+  //       <Loader2 className="mx-auto mt-4 mb-1 h-8 w-8 animate-spin" />
+  //       <p>Loading animes...</p>
+  //     </div>
+  //   );
 
-  if (!genresData)
-    return (
-      <Alert variant="destructive">
-        <XCircle />
-        <AlertTitle>External API Error!</AlertTitle>
-        <AlertDescription>
-          Unfortunately this is an error of external API we use to run this
-          site. Please wait a while and click button below.
-        </AlertDescription>
-        <div>
-          <Button
-            onClick={() => genresManualRefetch()}
-            variant="destructive"
-            className="mt-3"
-          >
-            Refresh Animes
-          </Button>
-        </div>
-      </Alert>
-    );
+  // if (!genresData)
+  //   return (
+  //     <div className="pb-6">
+  //       <ErrorAlert
+  //         title="External API Error!"
+  //         description="Unfortunately this is an error of external API we use to run this
+  //     site. Please wait a while and click button below."
+  //         onClick={() => genresManualRefetch()}
+  //       />
+  //     </div>
+  //   );
 
   return (
-    <main className="container mx-auto max-w-8xl mt-6">
+    <>
       <div>
         <Input
           placeholder="Search.."
@@ -141,75 +130,49 @@ const AnimesPage = () => {
           />
         </div>
 
-        <div className="mt-2">
-          <Filters
-            items={genresData}
-            checkedArray={genres}
-            toggle={toggleGenre}
-          />
-        </div>
+        {genresData ? (
+          <div className="mt-3">
+            <Filters
+              items={genresData}
+              checkedArray={genres}
+              toggle={toggleGenre}
+            />
+          </div>
+        ) : (
+          <div className="h-12"></div>
+        )}
       </div>
 
-      {animesData && (
-        <div className="mt-6">
+      {animesData ? (
+        <div className="mt-5">
           <AnimesGrid data={animesData} />
           <div className="text-center">
             <Button
-              className="mt-3 mb-6"
-              disabled={!animesHasNextPage}
+              className="mt-5 mb-5"
+              disabled={!animesHasNextPage || animesIsFetchingNextPage}
               onClick={() => animesFetchNextPage()}
             >
-              Load More
+              {animesIsFetchingNextPage ? "Loading..." : "Load More"}
             </Button>
           </div>
         </div>
-      )}
-
-      {/* {animesData ? (
-        <div className="mt-6">
-          <AnimesGrid data={animesData} />
+      ) : animesIsFetching ? (
+        <div className="my-5 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+          {[...Array(FETCH_LIMIT)].map((_, idx) => (
+            <AnimeCardSkeleton key={idx} />
+          ))}
         </div>
       ) : (
-        !animesIsLoading &&
-        ((animesRes as JikanAPIErrorType)?.status === 429 ? (
-          <Alert variant="destructive">
-            <XCircle />
-            <AlertTitle>You Reached API Rate Limit!</AlertTitle>
-            <AlertDescription>
-              Unfortunately this is a rate limit of external API we use to run
-              this site. Please wait 1s and click button below.
-            </AlertDescription>
-            <div>
-              <Button
-                onClick={() => animesManualRefetch()}
-                variant="destructive"
-                className="mt-3"
-              >
-                Refresh Animes
-              </Button>
-            </div>
-          </Alert>
-        ) : (
-          <Alert variant="destructive">
-            <XCircle />
-            <AlertTitle>External API Error!</AlertTitle>
-            <AlertDescription>
-              Unfortunately this is an error of external API we use to run this
-              site. Please wait a while and click button below.
-            </AlertDescription>
-            <div>
-              <Button
-                onClick={() => animesManualRefetch()}
-                variant="destructive"
-                className="mt-3"
-              >
-                Refresh Animes
-              </Button>
-            </div>
-          </Alert>
-        ))
-      )} */}
-    </main>
+        <div className="my-5">
+          <ErrorAlert
+            title="External API Error!"
+            description="Unfortunately this is an error of external API we use to run this
+  site. Please wait a while and click button below."
+            onClick={() => genresManualRefetch()}
+          />
+        </div>
+      )}
+    </>
   );
 };
 

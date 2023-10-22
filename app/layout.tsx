@@ -1,5 +1,5 @@
 import AppHeader from "@/components/layout/header/app-header";
-import MobileNav from "@/components/mobile-nav";
+import MobileNav from "@/components/layout/mobile-nav";
 import ModalProvider from "@/components/providers/modal-provider";
 import QueryProvider from "@/components/providers/query-provider";
 import SessionProvider from "@/components/providers/session-provider";
@@ -24,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-white dark:bg-zinc-900`}>
+      <body className={`${inter.className} relative min-h-[100vh] pb-16 bg-white dark:bg-zinc-900`}>
         <SessionProvider>
           <ThemeProvider
             attribute="class"
@@ -35,11 +35,11 @@ export default function RootLayout({
             <QueryProvider>
               <AppHeader />
               <ModalProvider />
-              <MobileNav />
               <Toaster />
-              <main className="container mx-auto max-w-8xl mt-3">
+              <main className="container mx-auto max-w-8xl mt-3 px-4">
                 {children}
               </main>
+              <MobileNav />
               <AppFooter />
             </QueryProvider>
           </ThemeProvider>
