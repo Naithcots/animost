@@ -54,7 +54,7 @@ const AnimesPage = () => {
       }),
     initialPageParam: 1,
     getNextPageParam: (lastPage, pages, lastPageParam) => {
-      if (!lastPage.pagination.has_next_page) return undefined;
+      if (!lastPage?.pagination?.has_next_page) return undefined;
       return lastPageParam + 1;
     },
     refetchOnWindowFocus: false,
