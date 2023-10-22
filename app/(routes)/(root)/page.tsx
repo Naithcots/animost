@@ -50,7 +50,7 @@ const Home = () => {
         )}
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 mb-8">
         <p className="mb-3 text-2xl font-bold">Top Upcoming Anime🔜</p>
 
         {upcomingAnimeData ? (

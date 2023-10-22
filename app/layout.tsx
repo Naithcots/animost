@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import AppFooter from "@/components/layout/footer/app-footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,11 +35,12 @@ export default function RootLayout({
             <QueryProvider>
               <AppHeader />
               <ModalProvider />
+              <MobileNav />
+              <Toaster />
               <main className="container mx-auto max-w-8xl mt-3">
                 {children}
               </main>
-              <MobileNav />
-              <Toaster />
+              <AppFooter />
             </QueryProvider>
           </ThemeProvider>
         </SessionProvider>
