@@ -13,5 +13,6 @@ export default async function getLibraryEntry({
   });
 
   const response = await fetch(url);
+  if (!response.ok) throw new Error();
   return await response.json();
 }

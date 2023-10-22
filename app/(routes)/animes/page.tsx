@@ -54,7 +54,8 @@ const AnimesPage = () => {
       }),
     initialPageParam: 1,
     getNextPageParam: (lastPage, pages, lastPageParam) => {
-      if (!lastPage?.pagination?.has_next_page) return undefined;
+      if (!lastPage?.pagination || !lastPage?.pagination?.has_next_page)
+        return undefined;
       return lastPageParam + 1;
     },
     refetchOnWindowFocus: false,
@@ -68,26 +69,6 @@ const AnimesPage = () => {
 
   const animesData = animesRes;
   const genresData = genresRes?.data;
-
-  // if (genresIsLoading && !genresData)
-  //   return (
-  //     <div className="text-center pb-6">
-  //       <Loader2 className="mx-auto mt-4 mb-1 h-8 w-8 animate-spin" />
-  //       <p>Loading animes...</p>
-  //     </div>
-  //   );
-
-  // if (!genresData)
-  //   return (
-  //     <div className="pb-6">
-  //       <ErrorAlert
-  //         title="External API Error!"
-  //         description="Unfortunately this is an error of external API we use to run this
-  //     site. Please wait a while and click button below."
-  //         onClick={() => genresManualRefetch()}
-  //       />
-  //     </div>
-  //   );
 
   return (
     <>
@@ -143,7 +124,7 @@ const AnimesPage = () => {
         )}
       </div>
 
-      {animesData ? (
+      {animesData && !!animesData.pages.length ? (
         <div className="mt-5">
           <AnimesGrid data={animesData} />
           <div className="text-center">

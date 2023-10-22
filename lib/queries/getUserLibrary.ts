@@ -1,9 +1,9 @@
 import { LibraryWithLibraryAnime } from "@/types";
 
 const getUserLibrary = async (): Promise<LibraryWithLibraryAnime[]> => {
-  const res = await fetch("/api/library");
-  const data = await res.json();
-  return data;
+  const response = await fetch("/api/library");
+  if (!response.ok) throw new Error();
+  return await response.json();
 };
 
 export default getUserLibrary;

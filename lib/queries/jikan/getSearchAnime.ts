@@ -72,5 +72,6 @@ export default async function getSearchAnime({
   );
 
   const response = await fetch(url);
+  if (!response.ok) throw new Error();
   return await response.json();
 }

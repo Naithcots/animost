@@ -14,5 +14,6 @@ export default async function getGenresAnime({ filter }: GetGenresAnimeParams) {
   );
 
   const response = await fetch(url);
+  if (!response.ok) throw new Error();
   return await response.json();
 }
