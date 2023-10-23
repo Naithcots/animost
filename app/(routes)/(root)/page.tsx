@@ -1,6 +1,7 @@
 "use client";
 import ErrorAlert from "@/components/alert/error-alert";
 import AnimeCard from "@/components/anime-card";
+import Carousel from "@/components/carousel/carousel";
 import AnimeCardSkeleton from "@/components/skeleton/anime-card-skeleton";
 import getPopularAnime from "@/lib/queries/jikan/getPopularAnime";
 import { useQuery } from "@tanstack/react-query";
@@ -39,6 +40,9 @@ const Home = () => {
 
   return (
     <>
+      {airingAnimeData && <div>
+        <Carousel items={airingAnimeData} />
+      </div>}
       <div>
         <p className="mb-3 text-2xl font-bold">Top Airing Anime🔥</p>
         {airingAnimeData ? (
