@@ -9,6 +9,7 @@ import {
 } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { useServerSession } from "../auth/[...nextauth]/route";
+import axios from "axios";
 
 const TIMEOUT_MS = 1000;
 
@@ -37,7 +38,7 @@ const animeTypeMap = {
 
 const sleep = () => new Promise((res, rej) => setTimeout(res, TIMEOUT_MS));
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const session = await useServerSession();
 
@@ -65,6 +66,7 @@ export async function POST(req: NextRequest) {
     }));
 
     let transactions = [];
+    let processed = 0;
 
     for (const anime of animeList) {
       //   console.log(anime);
@@ -185,6 +187,9 @@ export async function POST(req: NextRequest) {
           },
         })
       );
+
+      processed++;
+      await axios.get(`${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/emitimport?processed=${processed}`);
     }
 
     const importRes = await prisma.$transaction(transactions);
