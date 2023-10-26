@@ -1,7 +1,7 @@
 "use client";
 import ErrorAlert from "@/components/alert/error-alert";
 import AnimeCard from "@/components/anime-card";
-import Carousel from "@/components/carousel/carousel";
+import Carousel from "@/components/carousel/swiper/carousel";
 import AnimeCardSkeleton from "@/components/skeleton/anime-card-skeleton";
 import getPopularAnime from "@/lib/queries/jikan/getPopularAnime";
 import { useQuery } from "@tanstack/react-query";
@@ -40,7 +40,7 @@ const Home = () => {
 
   return (
     <>
-      {airingAnimeData && <div>
+      {airingAnimeData && <div className="mb-6">
         <Carousel items={airingAnimeData} />
       </div>}
       <div>
