@@ -44,7 +44,7 @@
     "tailwindcss-animate": "^1.0.7",
     "utf-8-validate": "^5.0.10",
     "xml-js": "^1.6.11",
-    "zod": "^3.22.2",
+    "zod": "^3.22.3",
     "zustand": "^4.4.1"
   },
   "devDependencies": {
