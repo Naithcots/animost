@@ -1,7 +1,19 @@
 import { Library, LibraryAnime } from "@prisma/client";
+import { Http2SecureServer } from "http2";
+import { Socket } from "net";
+import { NextApiResponse } from "next";
+import { Server } from "socket.io";
 
-type AnimeStatus = "all" | "airing" | "complete" | "upcoming";
-type AnimeOrderBy =
+export interface NextApiResponseWithSocket extends NextApiResponse {
+  socket: Socket & {
+    server: Http2SecureServer & {
+      io: Server;
+    };
+  };
+}
+
+export type AnimeStatus = "all" | "airing" | "complete" | "upcoming";
+export type AnimeOrderBy =
   | "mal_id"
   | "title"
   | "start_date"
@@ -14,7 +26,7 @@ type AnimeOrderBy =
   | "members"
   | "favorites";
 
-type Anime = {
+export type Anime = {
   mal_id: number;
   url: string;
   images: {
@@ -121,15 +133,88 @@ type Anime = {
   }[];
 };
 
-type LibraryWithLibraryAnime = Library & {
+export type LibraryWithLibraryAnime = Library & {
   LibraryAnime: LibraryAnime;
 };
 
-type JikanAPIErrorType = {
+export type JikanAPIErrorType = {
   error: string;
   status: number;
   type: string;
   messages: { [type: string]: string };
 };
 
-export type { AnimeOrderBy, AnimeStatus, Anime, LibraryWithLibraryAnime, JikanAPIErrorType };
+export interface MALImportFile {
+  _declaration: Declaration;
+  _comment: string;
+  myanimelist: Myanimelist;
+}
+
+export interface Declaration {
+  _attributes: Attributes;
+}
+
+export interface Attributes {
+  version: string;
+  encoding: string;
+}
+
+export interface Myanimelist {
+  myinfo: Myinfo;
+  anime: ImportAnime[];
+}
+
+export interface ImportAnime {
+  series_animedb_id: UserExportType;
+  series_title: SeriesTitle;
+  series_type: UserExportType;
+  series_episodes: UserExportType;
+  my_id: UserExportType;
+  my_watched_episodes: UserExportType;
+  my_start_date: UserExportType;
+  my_finish_date: UserExportType;
+  my_rated: My;
+  my_score: UserExportType;
+  my_storage: My;
+  my_storage_value: UserExportType;
+  my_status: UserExportType;
+  my_comments: My;
+  my_times_watched: UserExportType;
+  my_rewatch_value: My;
+  my_priority: UserExportType;
+  my_tags: My;
+  my_rewatching: UserExportType;
+  my_rewatching_ep: UserExportType;
+  my_discuss: UserExportType;
+  my_sns: UserExportType;
+  update_on_import: UserExportType;
+}
+
+export interface My {}
+
+export interface UserExportType {
+  _text: string;
+}
+
+export interface SeriesTitle {
+  _cdata: string;
+}
+
+export interface Myinfo {
+  user_id: UserExportType;
+  user_name: UserExportType;
+  user_export_type: UserExportType;
+  user_total_anime: UserExportType;
+  user_total_watching: UserExportType;
+  user_total_completed: UserExportType;
+  user_total_onhold: UserExportType;
+  user_total_dropped: UserExportType;
+  user_total_plantowatch: UserExportType;
+}
+
+export type MALUserAnimeStatus =
+  | "Completed"
+  | "Watching"
+  | "Plan to Watch"
+  | "On-Hold"
+  | "Dropped";

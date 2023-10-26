@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AppFooter from "@/components/layout/footer/app-footer";
+import { SocketProvider } from "@/components/providers/socket-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +25,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} relative min-h-[100vh] pb-16 bg-white dark:bg-zinc-900`}>
+      <body
+        className={`${inter.className} relative min-h-[100vh] pb-16 bg-white dark:bg-zinc-900`}
+      >
         <SessionProvider>
           <ThemeProvider
             attribute="class"
@@ -32,16 +35,18 @@ export default function RootLayout({
             enableSystem={false}
             enableColorScheme
           >
-            <QueryProvider>
-              <AppHeader />
-              <ModalProvider />
-              <Toaster />
-              <main className="container mx-auto max-w-8xl mt-3 px-4">
-                {children}
-              </main>
-              <MobileNav />
-              <AppFooter />
-            </QueryProvider>
+            <SocketProvider>
+              <QueryProvider>
+                <AppHeader />
+                <ModalProvider />
+                <Toaster />
+                <main className="container mx-auto max-w-8xl mt-3 px-4">
+                  {children}
+                </main>
+                <MobileNav />
+                <AppFooter />
+              </QueryProvider>
+            </SocketProvider>
           </ThemeProvider>
         </SessionProvider>
       </body>
