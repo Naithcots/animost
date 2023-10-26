@@ -18,7 +18,7 @@ const MalFileForm = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.on("import_progress", (processed) => {
+      socket.on("settings:mal-list-import", (processed) => {
         setProcessed(processed);
       });
     }

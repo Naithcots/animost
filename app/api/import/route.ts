@@ -189,7 +189,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
       );
 
       processed++;
-      await axios.get(`${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/emitimport?processed=${processed}`);
+      await axios.get(
+        `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/api/socket/import-list?processed=${processed}`
+      );
     }
 
     const importRes = await prisma.$transaction(transactions);
