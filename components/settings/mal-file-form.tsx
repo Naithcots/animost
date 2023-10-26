@@ -17,9 +17,11 @@ const MalFileForm = () => {
   const { socket, isConnected } = useSocket();
 
   useEffect(() => {
-    socket?.on("import_progress", (processed) => {
-      setProcessed(processed);
-    });
+    if (socket) {
+      socket.on("import_progress", (processed) => {
+        setProcessed(processed);
+      });
+    }
   }, [socket]);
 
   const onFileChange = (ev: ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +65,7 @@ const MalFileForm = () => {
         disabled={isLoading}
       />
       {error && <p className="text-red-500">{error}</p>}
-      {isLoading && (
+      {isConnected && isLoading && (
         <Progress
           value={(processed! / totalToProcess!) * 100}
           className="mt-4 mb-1 md:w-[40%]"
