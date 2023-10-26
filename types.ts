@@ -1,7 +1,19 @@
 import { Library, LibraryAnime } from "@prisma/client";
+import { Http2SecureServer } from "http2";
+import { Socket } from "net";
+import { NextApiResponse } from "next";
+import { Server } from "socket.io";
 
-type AnimeStatus = "all" | "airing" | "complete" | "upcoming";
-type AnimeOrderBy =
+export interface NextApiResponseWithSocket extends NextApiResponse {
+  socket: Socket & {
+    server: Http2SecureServer & {
+      io: Server;
+    };
+  };
+}
+
+export type AnimeStatus = "all" | "airing" | "complete" | "upcoming";
+export type AnimeOrderBy =
   | "mal_id"
   | "title"
   | "start_date"
@@ -14,7 +26,7 @@ type AnimeOrderBy =
   | "members"
   | "favorites";
 
-type Anime = {
+export type Anime = {
   mal_id: number;
   url: string;
   images: {
@@ -121,23 +133,15 @@ type Anime = {
   }[];
 };
 
-type LibraryWithLibraryAnime = Library & {
+export type LibraryWithLibraryAnime = Library & {
   LibraryAnime: LibraryAnime;
 };
 
-type JikanAPIErrorType = {
+export type JikanAPIErrorType = {
   error: string;
   status: number;
   type: string;
   messages: { [type: string]: string };
-};
-
-export type {
-  AnimeOrderBy,
-  AnimeStatus,
-  Anime,
-  LibraryWithLibraryAnime,
-  JikanAPIErrorType,
 };
 
 export interface MALImportFile {
@@ -208,7 +212,6 @@ export interface Myinfo {
   user_total_plantowatch: UserExportType;
 }
 
-// Unsure
 export type MALUserAnimeStatus =
   | "Completed"
   | "Watching"

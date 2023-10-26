@@ -1,7 +1,11 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiResponseWithSocket } from "@/types";
+import { NextApiRequest } from "next";
 import { Server } from "socket.io";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponseWithSocket
+) {
   const io: Server = res?.socket?.server.io;
 
   if (req.method === "GET") {

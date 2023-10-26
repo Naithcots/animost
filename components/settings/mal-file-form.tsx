@@ -2,8 +2,8 @@
 import { MALImportFile } from "@/types";
 import axios from "axios";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import socket from "socket.io-client";
 import { xml2json } from "xml-js";
+import { useSocket } from "../providers/socket-provider";
 import { Button } from "../ui/button";
 import { Progress } from "../ui/progress";
 import { toast } from "../ui/use-toast";
@@ -14,17 +14,13 @@ const MalFileForm = () => {
   const [totalToProcess, setTotalToProcess] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { socket, isConnected } = useSocket();
 
   useEffect(() => {
-    const io = socket(process.env.NEXT_PUBLIC_SITE_URL!, {
-      path: "/api/socket/io",
-      addTrailingSlash: false,
-    });
-    io.on("import_progress", (processed) => {
-      // console.log(data);
+    socket?.on("import_progress", (processed) => {
       setProcessed(processed);
     });
-  }, []);
+  }, [socket]);
 
   const onFileChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const files = ev.target.files;
@@ -41,16 +37,14 @@ const MalFileForm = () => {
     const xmlText = await xmlFile!.text();
 
     const json = xml2json(xmlText, { compact: true });
-    // console.log(json);
     const totalAmount = (JSON.parse(json) as MALImportFile).myanimelist.anime
       .length;
     setProcessed(0);
     setTotalToProcess(totalAmount);
 
     try {
-      const res = await axios.post("/api/import", json);
+      await axios.post("/api/import", json);
       setIsLoading(false);
-      console.log(res.data);
       toast({ title: "Library succesfully imported!" });
     } catch (error: any) {
       setIsLoading(false);

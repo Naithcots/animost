@@ -1,7 +1,11 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiResponseWithSocket } from "@/types";
+import { NextApiRequest } from "next";
 import { Server } from "socket.io";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponseWithSocket
+) {
   if (!res.socket?.server?.io) {
     const io = new Server(res.socket.server, {
       path: "/api/socket/io",
