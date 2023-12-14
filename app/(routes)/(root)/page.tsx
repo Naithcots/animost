@@ -40,10 +40,11 @@ const Home = () => {
 
   return (
     <>
-      {airingAnimeData && <div className="mb-6">
+      {airingAnimeData ? <div>
         <Carousel items={airingAnimeData} />
-      </div>}
-      <div>
+      </div> : <div className="h-56" />}
+
+      <div className="mt-8">
         <p className="mb-3 text-2xl font-bold">Top Airing Anime🔥</p>
         {airingAnimeData ? (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
@@ -67,7 +68,7 @@ const Home = () => {
         )}
       </div>
 
-      <div className="mt-6 mb-8">
+      <div className="mt-8">
         <p className="mb-3 text-2xl font-bold">Top Upcoming Anime🔜</p>
         {upcomingAnimeData ? (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">

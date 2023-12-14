@@ -19,7 +19,7 @@ const SlideContent = ({
       src={item.images.webp.large_image_url}
       className={`${
         (swiperProps.isPrev || swiperProps.isNext) && "scale-[85%]"
-      } transition-all duration-500 select-none w-full`}
+      } transition-all duration-500 select-none w-full aspect-[3/4] object-cover object-center`}
       onClick={() => {
         if (swiperProps.isPrev) swiper.slidePrev();
         if (swiperProps.isNext) swiper.slideNext();

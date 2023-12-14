@@ -17,7 +17,7 @@ const MobileNav = () => {
     <>
       {hiddenOverlay}
       <button
-        className="sm:hidden fixed bottom-3 ml-auto right-3 p-3 w-fit h-fit bg-blue-600 rounded-full cursor-pointer hover:bg-blue-600/80 transition z-50"
+        className="sm:hidden fixed bottom-3 ml-auto right-3 p-3 w-fit h-fit bg-card rounded-full shadow-lg cursor-pointer hover:bg-secondary/95 transition z-50"
         onClick={() => setOpen((open) => !open)}
       >
         <Menu />

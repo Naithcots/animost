@@ -40,7 +40,7 @@ const NavigationMenu = () => {
           <NavigationMenuTrigger className="bg-transparent dark:hover:bg-zinc-800 dark:focus:bg-zinc-800 dark:data-[active]:bg-zinc-800 dark:data-[state=open]:bg-zinc-800">
             Community
           </NavigationMenuTrigger>
-          <NavigationMenuContent className="dark:bg-zinc-800">
+          <NavigationMenuContent>
             <div className="flex gap-x-3 p-3">
               <NavigationMenuLink asChild>
                 <a

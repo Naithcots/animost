@@ -22,7 +22,7 @@ const AppHeader = () => {
   const user = data?.user;
 
   return (
-    <header className="container mx-auto max-w-8xl px-4 flex items-center justify-between sm:justify-normal py-3 gap-x-4 z-100">
+    <header className="container max-w-8xl px-4 flex items-center justify-between sm:justify-normal py-3 gap-x-4 z-100">
       <Link href={"/"}>
         <span className="text-xl font-semibold">AniMost</span>
       </Link>
