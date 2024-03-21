@@ -8,11 +8,13 @@ datasource db {
 }
 
 model User {
-  id        String  @id @default(uuid())
-  googleId  String  @unique
-  email     String  @unique
+  id        String          @id @default(uuid())
+  googleId  String?         @unique
+  email     String          @unique
   username  String
+  password  String?
   avatarUrl String?
+  type      UserAccountType
 
   Library     Library[]
   AnimeStream AnimeStream[]
@@ -73,6 +75,11 @@ model Genre {
   url    String
 
   Media LibraryAnime[]
+}
+
+enum UserAccountType {
+  GOOGLE_OAUTH
+  CREDENTIALS
 }
 
 enum MediaType {

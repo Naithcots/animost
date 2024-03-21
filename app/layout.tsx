@@ -15,7 +15,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "AniMost",
-  description: "Your favourite anime library and streaming site.",
+  description: "Your favourite anime library website.",
 };
 
 export default function RootLayout({
@@ -33,7 +33,7 @@ export default function RootLayout({
             enableSystem={false}
             enableColorScheme
           >
-            <SocketProvider>
+            {/* <SocketProvider> */}
               <QueryProvider>
                 <AppHeader />
                 <ModalProvider />
@@ -44,7 +44,7 @@ export default function RootLayout({
                 <MobileNav />
                 <AppFooter />
               </QueryProvider>
-            </SocketProvider>
+            {/* </SocketProvider> */}
           </ThemeProvider>
         </SessionProvider>
       </body>

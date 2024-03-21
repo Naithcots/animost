@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import UserAvatar from "@/components/user-avatar";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import ThemeToggle from "../../theme-toggle";
 import NavigationMenu from "./navigation-menu";
@@ -66,7 +66,9 @@ const AppHeader = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button onClick={() => signIn("google")}>Sign In</Button>
+            <Button asChild>
+              <Link href={"/sign-in"}>Sign In</Link>
+            </Button>
           ))}
         <ThemeToggle />
       </div>
