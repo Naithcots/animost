@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import getAnimeFull from "@/lib/queries/jikan/getAnimeFull";
+import getAnimeFull from "@/lib/queries/jikan/getAnimeFullById";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LibraryAnime, LibraryStatus } from "@prisma/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -48,16 +48,14 @@ const EditAnimeLibraryPrismaDialog = () => {
   const open = isOpen && type === "editAnimeLibraryPrisma";
 
   const {
-    data: jikanReq,
+    data: jikanData,
     isLoading: jikanIsLoading,
     isError: jikanIsError,
   } = useQuery({
     queryKey: ["anime", { animeId: anime?.jikanMediaId }],
-    queryFn: () => getAnimeFull({ id: Number(anime?.jikanMediaId) }),
+    queryFn: () => getAnimeFull(anime.jikanMediaId),
     enabled: !!anime && open,
   });
-
-  const jikanData = jikanReq?.data;
 
   const formSchema = z.object({
     status: z.nativeEnum(LibraryStatus),
@@ -242,7 +240,7 @@ const EditAnimeLibraryPrismaDialog = () => {
                         }
                       />
                       {jikanData?.episodes && (
-                        <span className="absolute flex items-center h-full top-0 bottom-0 right-3 text-zinc-600 select-none">
+                        <span className="absolute bottom-0 right-3 top-0 flex h-full select-none items-center text-zinc-600">
                           /{jikanData?.episodes}
                         </span>
                       )}

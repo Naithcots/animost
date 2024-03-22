@@ -1,5 +1,5 @@
 import prisma from "@/lib/db";
-import getAnimeFull from "@/lib/queries/jikan/getAnimeFull";
+import getAnimeFull from "@/lib/queries/jikan/getAnimeFullById";
 import { Anime, MALImportFile, MALUserAnimeStatus } from "@/types";
 import {
   AnimeStatus,

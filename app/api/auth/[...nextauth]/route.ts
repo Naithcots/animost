@@ -1,16 +1,19 @@
 import db from "@/lib/db";
 import { UserAccountType } from "@prisma/client";
 import bcrypt from "bcrypt";
-import { AuthOptions, DefaultSession, User } from "next-auth";
+import { AuthOptions, User } from "next-auth";
 import NextAuth, { getServerSession } from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 
 declare module "next-auth" {
   interface Session {
-    user: {
-      id: string;
-    } & DefaultSession["user"];
+    user: User;
+  }
+
+  interface User {
+    id: string;
+    dbId?: string;
   }
 }
 
@@ -41,7 +44,7 @@ const authOptions: AuthOptions = {
 
           const passwordMatches = await bcrypt.compare(
             credentials.password,
-            user.password!
+            user.password!,
           );
 
           if (passwordMatches) {
@@ -67,7 +70,10 @@ const authOptions: AuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       if (!user.email || !user.name) return false;
-      if (account?.provider === "credentials") return true;
+      if (account?.provider === "credentials") {
+        user.dbId = user.id;
+        return true;
+      }
 
       try {
         const dbUser = await db.user.findUnique({
@@ -78,7 +84,7 @@ const authOptions: AuthOptions = {
 
         if (!dbUser) {
           if (account?.provider === "google") {
-            await db.user.create({
+            const newUser = await db.user.create({
               data: {
                 googleId: account.providerAccountId,
                 email: user.email,
@@ -87,6 +93,7 @@ const authOptions: AuthOptions = {
                 type: UserAccountType.GOOGLE_OAUTH,
               },
             });
+            user.dbId = newUser.id;
           } else return false;
         } else {
           if (account?.provider === "google" && !dbUser.googleId) {
@@ -97,6 +104,7 @@ const authOptions: AuthOptions = {
               },
             });
           }
+          user.dbId = dbUser.id;
         }
 
         return true;
@@ -106,7 +114,7 @@ const authOptions: AuthOptions = {
       }
     },
     async jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user) token.id = user.dbId;
       return token;
     },
     async session({ session, token }) {

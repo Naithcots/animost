@@ -1,3 +1,4 @@
+import { Library } from "@prisma/client";
 import qs from "query-string";
 
 type GetLibraryEntryParams = {
@@ -14,5 +15,5 @@ export default async function getLibraryEntry({
 
   const response = await fetch(url);
   if (!response.ok) throw new Error();
-  return await response.json();
+  return (await response.json()) as Library;
 }

@@ -224,7 +224,7 @@ const EditAnimeLibraryJikanDialog = () => {
                         }
                       />
                       {anime?.episodes && (
-                        <span className="absolute flex items-center h-full top-0 bottom-0 right-3 text-zinc-600 select-none">
+                        <span className="absolute bottom-0 right-3 top-0 flex h-full select-none items-center text-zinc-600">
                           /{anime.episodes}
                         </span>
                       )}

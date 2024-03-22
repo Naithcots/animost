@@ -26,18 +26,14 @@ export async function GET(req: NextRequest) {
     if (mediaId) {
       libraryEntry = await db.library.findFirst({
         where: {
-          user: {
-            googleId: session.user.id,
-          },
+          userId: session.user.id,
           mediaId,
         },
       });
     } else {
       libraryEntry = await db.library.findMany({
         where: {
-          user: {
-            googleId: session.user.id,
-          },
+          userId: session.user.id,
         },
         include: {
           LibraryAnime: true,
@@ -91,7 +87,7 @@ export async function POST(req: NextRequest) {
       data: {
         user: {
           connect: {
-            googleId: session.user.id,
+            id: session.user.id,
           },
         },
         status: library.status,

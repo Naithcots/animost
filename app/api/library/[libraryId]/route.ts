@@ -4,7 +4,7 @@ import { useServerSession } from "../../auth/[...nextauth]/route";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { libraryId: string } }
+  { params }: { params: { libraryId: string } },
 ) {
   try {
     const session = await useServerSession();
@@ -22,9 +22,7 @@ export async function PATCH(
       where: {
         id: libraryId,
         mediaId: values.mediaId.toString(),
-        user: {
-          googleId: session.user.id,
-        },
+        userId: session.user.id,
       },
       data: {
         episodes: values.episodes,
@@ -42,7 +40,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { libraryId: string } }
+  { params }: { params: { libraryId: string } },
 ) {
   try {
     const session = await useServerSession();
@@ -56,9 +54,7 @@ export async function DELETE(
     const libraryEntry = await db.library.delete({
       where: {
         id: libraryId,
-        user: {
-          googleId: session.user.id,
-        },
+        userId: session.user.id,
       },
     });
 
