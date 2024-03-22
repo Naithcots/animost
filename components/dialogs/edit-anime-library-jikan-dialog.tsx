@@ -144,13 +144,13 @@ const EditAnimeLibraryJikanDialog = () => {
     return () => {
       unsubscribe();
     };
-  }, [form.watch, anime]);
+  }, [form, form.watch, anime]);
 
   useEffect(() => {
     if (library?.status) form.setValue("status", library.status);
     if (library?.score) form.setValue("score", library.score);
     if (library?.episodes) form.setValue("episodes", library.episodes);
-  }, [anime, library]);
+  }, [form, anime, library]);
 
   if (!anime && !library) return null;
 

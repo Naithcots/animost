@@ -27,7 +27,7 @@ const LibraryPage = () => {
 
   useEffect(() => {
     if (session.status === "unauthenticated") router.push("/");
-  }, [session]);
+  }, [session, router]);
 
   const {
     data: animeLibrary,
@@ -41,19 +41,19 @@ const LibraryPage = () => {
   });
 
   const completedAnimeLibrary = animeLibrary?.filter(
-    (entry) => entry.status === "COMPLETED"
+    (entry) => entry.status === "COMPLETED",
   );
   const watchingAnimeLibrary = animeLibrary?.filter(
-    (entry) => entry.status === "WATCHING"
+    (entry) => entry.status === "WATCHING",
   );
   const plannedAnimeLibrary = animeLibrary?.filter(
-    (entry) => entry.status === "PLANNING"
+    (entry) => entry.status === "PLANNING",
   );
   const pausedAnimeLibrary = animeLibrary?.filter(
-    (entry) => entry.status === "PAUSED"
+    (entry) => entry.status === "PAUSED",
   );
   const droppedAnimeLibrary = animeLibrary?.filter(
-    (entry) => entry.status === "DROPPED"
+    (entry) => entry.status === "DROPPED",
   );
 
   const animesByStatusMap = {
@@ -89,10 +89,10 @@ const LibraryPage = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-y-3 mt-3">
+      <div className="mt-3 flex flex-col gap-y-3">
         <div className="my-2">
-          <h2 className="text-2xl mb-3">{categoryNameByStatusMap[status]}</h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+          <h2 className="mb-3 text-2xl">{categoryNameByStatusMap[status]}</h2>
+          <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
             {!!animesByStatusMap[status]?.length ? (
               animesByStatusMap[status]?.map((libraryEntry) => (
                 <LibraryAnimeCard data={libraryEntry} key={libraryEntry.id} />

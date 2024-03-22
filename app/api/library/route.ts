@@ -1,4 +1,5 @@
 import db from "@/lib/db";
+import { useServerSession } from "@/lib/utils";
 import { Anime } from "@/types";
 import {
   AnimeStatus,
@@ -7,7 +8,6 @@ import {
   MediaType,
 } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { useServerSession } from "../auth/[...nextauth]/route";
 
 // GET all authorized user library entries
 // Optional searchParams:

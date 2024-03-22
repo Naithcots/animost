@@ -40,20 +40,24 @@ const Home = () => {
 
   return (
     <>
-      {airingAnimeData ? <div>
-        <Carousel items={airingAnimeData} />
-      </div> : <div className="h-56" />}
+      {airingAnimeData ? (
+        <div>
+          <Carousel items={airingAnimeData} />
+        </div>
+      ) : (
+        <div className="h-56" />
+      )}
 
       <div className="mt-8">
         <p className="mb-3 text-2xl font-bold">Top Airing Anime🔥</p>
         {airingAnimeData ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
             {airingAnimeData.map((item: any) => (
               <AnimeCard data={item} key={item.mal_id} />
             ))}
           </div>
         ) : airingAnimeIsLoading ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
             {[...Array(FETCH_LIMIT)].map((_, idx) => (
               <AnimeCardSkeleton key={idx} />
             ))}
@@ -71,13 +75,13 @@ const Home = () => {
       <div className="mt-8">
         <p className="mb-3 text-2xl font-bold">Top Upcoming Anime🔜</p>
         {upcomingAnimeData ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
             {upcomingAnimeData.map((item: any) => (
               <AnimeCard data={item} key={item.mal_id} />
             ))}
           </div>
         ) : upcomingAnimeIsLoading ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
             {[...Array(FETCH_LIMIT)].map((_, idx) => (
               <AnimeCardSkeleton key={idx} />
             ))}

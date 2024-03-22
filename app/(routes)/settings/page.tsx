@@ -1,5 +1,5 @@
-import { useServerSession } from "@/app/api/auth/[...nextauth]/route";
 import MalFileForm from "@/components/settings/mal-file-form";
+import { useServerSession } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
 const SettingsPage = async () => {
@@ -15,7 +15,7 @@ const SettingsPage = async () => {
         <p className="-mt-1 opacity-80">
           Import an XML file with your anime list below
         </p>
-        <span className="block -mt-1 text-red-500">
+        <span className="-mt-1 block text-red-500">
           WARNING! It will override all existing items
         </span>
         <MalFileForm />

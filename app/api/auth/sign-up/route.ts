@@ -1,6 +1,6 @@
 import db from "@/lib/db";
 import { UserAccountType } from "@prisma/client";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import z from "zod";
 
 export async function POST(req: Request) {

@@ -112,7 +112,7 @@ const AddAnimeLibraryDialog = () => {
     return () => {
       unsubscribe();
     };
-  }, [form.watch, anime]);
+  }, [form, form.watch, anime]);
 
   if (!anime) return null;
 

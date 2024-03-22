@@ -1,10 +1,9 @@
-import { useServerSession } from "@/app/api/auth/[...nextauth]/route";
 import AnimePageButton from "@/components/anime-page/button";
 import Synopsis from "@/components/anime-page/synopsis";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import getAnimeFullById from "@/lib/queries/jikan/getAnimeFullById";
-import { cn } from "@/lib/utils";
+import { cn, useServerSession } from "@/lib/utils";
 import { Music, Star, Tv } from "lucide-react";
 import Image from "next/image";
 

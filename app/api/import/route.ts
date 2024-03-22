@@ -1,5 +1,6 @@
 import prisma from "@/lib/db";
 import getAnimeFull from "@/lib/queries/jikan/getAnimeFullById";
+import { useServerSession } from "@/lib/utils";
 import { Anime, MALImportFile, MALUserAnimeStatus } from "@/types";
 import {
   AnimeStatus,
@@ -7,9 +8,8 @@ import {
   LibraryStatus,
   MediaType,
 } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
-import { useServerSession } from "../auth/[...nextauth]/route";
 import axios from "axios";
+import { NextRequest, NextResponse } from "next/server";
 
 const TIMEOUT_MS = 1000;
 
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         let jikanAnime: Anime | null = null;
 
         await sleep();
-        jikanAnime = (await getAnimeFull({ id: Number(anime.id) })).data;
+        jikanAnime = await getAnimeFull(anime.id);
 
         // console.log("Jikan: ", jikanAnime);
 
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 })),
               },
             },
-          })
+          }),
         );
 
         // LibraryAnime now exist, add new Library entry
@@ -143,7 +143,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
               where: {
                 id: libraryEntry.id,
               },
-            })
+            }),
           );
 
           //   Add new record
@@ -185,12 +185,12 @@ export async function POST(req: NextRequest, res: NextResponse) {
             score: anime.rating ? Number(anime.rating) * 10 : null,
             status: libraryStatusMap[anime.status],
           },
-        })
+        }),
       );
 
       processed++;
       await axios.get(
-        `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/api/socket/import-list?processed=${processed}`
+        `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/api/socket/import-list?processed=${processed}`,
       );
     }
 

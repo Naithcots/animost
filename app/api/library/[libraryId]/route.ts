@@ -1,6 +1,6 @@
 import db from "@/lib/db";
+import { useServerSession } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
-import { useServerSession } from "../../auth/[...nextauth]/route";
 
 export async function PATCH(
   req: NextRequest,

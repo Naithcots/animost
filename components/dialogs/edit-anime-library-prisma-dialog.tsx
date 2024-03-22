@@ -158,7 +158,7 @@ const EditAnimeLibraryPrismaDialog = () => {
     return () => {
       unsubscribe();
     };
-  }, [form.watch, jikanData]);
+  }, [form, form.watch, jikanData]);
 
   useEffect(() => {
     setIsReady(false);
@@ -166,7 +166,7 @@ const EditAnimeLibraryPrismaDialog = () => {
     if (library?.score) form.setValue("score", library.score);
     if (library?.episodes) form.setValue("episodes", library.episodes);
     setIsReady(true);
-  }, [anime, library, jikanData]);
+  }, [form, anime, library, jikanData]);
 
   if (!anime || !library || !jikanData || !isReady) return null;
 
