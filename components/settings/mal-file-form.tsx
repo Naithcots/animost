@@ -1,33 +1,86 @@
 "use client";
+import socket from "@/lib/socket";
 import { MALImportFile } from "@/types";
-import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { xml2json } from "xml-js";
-import { useSocket } from "../providers/socket-provider";
 import { Button } from "../ui/button";
 import { Progress } from "../ui/progress";
 import { toast } from "../ui/use-toast";
 
 const MalFileForm = () => {
-  const [xmlFile, setXmlFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [socketConnected, setSocketConnected] = useState(false);
   const [processed, setProcessed] = useState<number | null>(null);
   const [totalToProcess, setTotalToProcess] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { socket, isConnected } = useSocket();
+  const session = useSession();
+  const router = useRouter();
 
   useEffect(() => {
-    if (socket) {
-      socket.on("settings:mal-list-import", (processed) => {
-        setProcessed(processed);
+    const onConnect = () => {
+      setSocketConnected(true);
+    };
+
+    const onImportProgress = (data: { current: number; total: number }) => {
+      setProcessed(data.current);
+      setTotalToProcess(data.total);
+    };
+
+    const onImportSuccess = (data: { success: number; total: number }) => {
+      setIsLoading(false);
+
+      if (data.success === data.total) {
+        toast({
+          title: "Import successful!",
+          description: "Your list should now appear in library.",
+        });
+      } else {
+        toast({
+          title: `Import partially successful. ${((data.success / data.total) * 100).toFixed(2)}`,
+          description:
+            "Your list should now appear in library. Try to import again later to get all entries",
+        });
+      }
+    };
+
+    const onImportFailed = () => {
+      setIsLoading(false);
+      setError("An error occured..");
+      toast({
+        title: "Import failed...",
+        description: "Please try again later.",
+        variant: "destructive",
       });
+    };
+
+    if (session.status === "loading") return;
+    if (session.status === "unauthenticated") {
+      router.push("/");
+      return;
     }
-  }, [socket]);
+
+    socket.connect();
+    socket.on("connect", onConnect);
+    socket.on("mal-import:progress", onImportProgress);
+    socket.on("mal-import:success", onImportSuccess);
+    socket.on("mal-import:failed", onImportFailed);
+
+    return () => {
+      if (socket.connected) socket.disconnect();
+      socket.off("connect", onConnect);
+      socket.off("mal-import:progress", onImportProgress);
+      socket.off("mal-import:success", onImportSuccess);
+      socket.off("mal-import:failed", onImportFailed);
+    };
+  }, [session]);
 
   const onFileChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const files = ev.target.files;
     if (files?.length) {
-      setXmlFile(files[0]);
+      setFile(files[0]);
     }
   };
 
@@ -36,7 +89,7 @@ const MalFileForm = () => {
     setIsLoading(true);
     setError(null);
 
-    const xmlText = await xmlFile!.text();
+    const xmlText = await file!.text();
 
     const json = xml2json(xmlText, { compact: true });
     const totalAmount = (JSON.parse(json) as MALImportFile).myanimelist.anime
@@ -44,14 +97,33 @@ const MalFileForm = () => {
     setProcessed(0);
     setTotalToProcess(totalAmount);
 
-    try {
-      await axios.post("/api/import", json);
+    console.log(JSON.parse(json));
+
+    if (!socket) {
+      toast({
+        title: "Import service unavailable!",
+        description: "Please try again later..",
+      });
       setIsLoading(false);
-      toast({ title: "Library succesfully imported!" });
-    } catch (error: any) {
-      setIsLoading(false);
-      setError("An error occured during import, no changes made in library.");
+      setError("Import service unavailable!");
+      return;
     }
+
+    socket.emit("mal-import:init", {
+      file: json,
+      userId: session.data!.user.id,
+    });
+
+    // await importMalList();
+
+    // try {
+    //   await axios.post("/api/import", json);
+    //   setIsLoading(false);
+    //   toast({ title: "Library succesfully imported!" });
+    // } catch (error: any) {
+    //   setIsLoading(false);
+    //   setError("An error occured during import, no changes made in library.");
+    // }
   };
 
   return (
@@ -61,17 +133,21 @@ const MalFileForm = () => {
         accept=".xml"
         multiple={false}
         onChange={onFileChange}
-        className="block mt-1"
+        className="mt-1 block"
         disabled={isLoading}
       />
       {error && <p className="text-red-500">{error}</p>}
-      {isConnected && isLoading && (
+      {processed && totalToProcess && isLoading && (
         <Progress
-          value={(processed! / totalToProcess!) * 100}
-          className="mt-4 mb-1 md:w-[40%]"
+          value={(processed / totalToProcess) * 100}
+          className="mb-1 mt-4 md:w-[40%]"
         />
       )}
-      <Button className="mt-3" disabled={!xmlFile || isLoading}>
+      <Button
+        className="mt-3"
+        disabled={!file || isLoading || !socketConnected}
+        type="submit"
+      >
         {isLoading ? "Importing..." : "Import"}
       </Button>
     </form>

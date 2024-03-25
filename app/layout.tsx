@@ -4,7 +4,6 @@ import MobileNav from "@/components/layout/mobile-nav";
 import ModalProvider from "@/components/providers/modal-provider";
 import QueryProvider from "@/components/providers/query-provider";
 import SessionProvider from "@/components/providers/session-provider";
-import { SocketProvider } from "@/components/providers/socket-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
@@ -33,18 +32,14 @@ export default function RootLayout({
             enableSystem={false}
             enableColorScheme
           >
-            {/* <SocketProvider> */}
-              <QueryProvider>
-                <AppHeader />
-                <ModalProvider />
-                <Toaster />
-                <main className="container max-w-8xl my-3 px-4">
-                  {children}
-                </main>
-                <MobileNav />
-                <AppFooter />
-              </QueryProvider>
-            {/* </SocketProvider> */}
+            <QueryProvider>
+              <AppHeader />
+              <ModalProvider />
+              <Toaster />
+              <main className="max-w-8xl container my-3 px-4">{children}</main>
+              <MobileNav />
+              <AppFooter />
+            </QueryProvider>
           </ThemeProvider>
         </SessionProvider>
       </body>

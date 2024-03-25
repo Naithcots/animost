@@ -22,15 +22,15 @@ const AppHeader = () => {
   const user = data?.user;
 
   return (
-    <header className="container max-w-8xl px-4 flex items-center justify-between sm:justify-normal py-3 gap-x-4 z-100">
+    <header className="max-w-8xl z-100 container flex items-center justify-between gap-x-4 px-4 py-3 sm:justify-normal">
       <Link href={"/"}>
         <span className="text-xl font-semibold">AniMost</span>
       </Link>
-      <div className="hidden sm:flex flex-1 ml-8">
+      <div className="ml-8 hidden flex-1 sm:flex">
         <NavigationMenu />
       </div>
       {user && (
-        <div className="hidden ml-auto md:block">
+        <div className="ml-auto hidden md:block">
           <Link href={"/library"}>
             <Button>Library</Button>
           </Link>
@@ -43,15 +43,15 @@ const AppHeader = () => {
               <DropdownMenuTrigger>
                 <UserAvatar src={user?.image || null} username={user.name!} />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="dark:bg-zinc-800 dark:border-zinc-950">
+              <DropdownMenuContent className="dark:border-zinc-950 dark:bg-zinc-800">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator className="dark:bg-zinc-700" />
-                <DropdownMenuItem className="dark:hover:bg-zinc-700">
+                {/* <DropdownMenuItem className="dark:hover:bg-zinc-700" asChild>
                   <Link href="/profile" onClick={() => setOpen(false)}>
                     Profile
                   </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="dark:hover:bg-zinc-700">
+                </DropdownMenuItem> */}
+                <DropdownMenuItem className="dark:hover:bg-zinc-700" asChild>
                   <Link
                     href="/library"
                     onClick={() => setOpen(false)}
@@ -60,8 +60,20 @@ const AppHeader = () => {
                     Library
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="dark:hover:bg-zinc-700">
-                  <button onClick={() => signOut()}>Sign Out</button>
+                <DropdownMenuItem className="dark:hover:bg-zinc-700" asChild>
+                  <Link
+                    href="/settings"
+                    onClick={() => setOpen(false)}
+                    prefetch={false}
+                  >
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="dark:hover:bg-zinc-700"
+                  onClick={() => signOut()}
+                >
+                  Sign Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
